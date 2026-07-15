@@ -12,12 +12,16 @@ import base64
 import binascii
 import json
 from datetime import datetime, timedelta
+import warnings
 
 # 第三方库导入
 import jwt
 
 # 本地模块导入
 # from utils import helper
+
+#忽略警告
+warnings.filterwarnings("ignore", message=".*below the minimum recommended length.*")
 
 class JWTcode:
     @staticmethod
@@ -34,7 +38,7 @@ class JWTcode:
     def jwt_decode(data:str) -> str | None:
         """
         :param data: string data to encode
-        :return: 解码成功返回list[str]，失败返回None
+        :return: 解码成功返回str，失败返回None
         """
         jwt_string=data.split('.')
 
@@ -55,13 +59,17 @@ class JWTcode:
     @staticmethod
     def jwt_encode(jwt_str:str,password:str|None=None) -> str | None:
         """
-        :param jwt_str:
-        :param password:
-        :return:
+        :param jwt_str: 未加密的JWT
+        :param password: JWT的加密的密码
+        :return: 加密的JWT，失败返回 None
         """
         jwt_list=jwt_str.split('.')
+        jwt_list[0] = json.loads(jwt_list[0])
+        jwt_list[1] = json.loads(jwt_list[1])
         try:
-            token = jwt.encode(payload=jwt_list[1],password=password,algorithm=jwt_list[0]["alg"])
+            if jwt_list[0]["alg"] is None:
+                password=None
+            token = jwt.encode(payload=jwt_list[1],key=password,algorithm=jwt_list[0]["alg"])
             return token
         except Exception as e:
             print(f"[-] <ERROR>: {e}",file=sys.stderr)

@@ -1,3 +1,7 @@
 .*/
 
 !.gitignore
+
+test.py
+
+src/__pycache__/
