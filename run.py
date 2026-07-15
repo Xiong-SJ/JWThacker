@@ -10,7 +10,7 @@ import argparse
 import sys
 
 # 第三方库导入
-# import requests
+from colorama import init, Fore, Style
 
 # 本地模块导入
 import src.JWThacker as JWThacker
@@ -31,7 +31,7 @@ def main():
     par_encode=subparsers.add_parser("encode",help="编码 JWT")
     par_encode.add_argument("token", type=str, help="原 JWT 字符串")
     par_encode.add_argument("-p","--password",type=str,default=None,help="密码")
-    par_encode.add_argument("--alg",type=str,default=None,help="需要的加密算法（若原 JWT 字符串中包含就不需要写）")
+    par_encode.add_argument("--alg",type=str,default=None,help="需要的加密算法加密算法（若原 JWT 字符串中不含 alg 字段则需指定）")
 
     # TODO 暴力破解
     par_brute=subparsers.add_parser("brute",help="暴力破解 JWT 密码（还未开放）")
@@ -45,23 +45,23 @@ def main():
 
     if not args.command in ["decode","encode","brute"]:
         parser.print_help()
-        print(f"[-] 没有该 <{args.command}> command")
+        print(f"{Fore.RED}[-] 没有该 <{args.command}> command{Fore.RESET}")
         sys.exit(-1)
 
     if args.command == "decode":
         token_decode = JWThacker.JWT_decode(args.token)
         if token_decode is None :
-            print("[-] 解码失败", file=sys.stderr)
+            print(f"{Fore.RED}[-] 解码失败{Fore.RESET}", file=sys.stderr)
             sys.exit(-1)
-        print(token_decode)
+        print(f"{Fore.GREEN}[+] <Success> : {token_decode}{Fore.RESET}")
 
     elif args.command == "encode":
         if args.alg =="None": args.alg=None
         token_decode = JWThacker.JWT_encode(args.token,password=args.password,algorithm=args.alg)
         if token_decode is None:
-            print("[-] 加密失败", file=sys.stderr)
+            print(f"{Fore.RED}[-] 加密失败{Fore.RESET}", file=sys.stderr)
             sys.exit(-1)
-        print(token_decode)
+        print(f"{Fore.GREEN}[+] <Success> : {token_decode}{Fore.RESET}")
 
     else:
         pass
@@ -72,4 +72,4 @@ if  __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"[-] <ERROR>: {e}",file=sys.stderr)
+        print(f"{Fore.RED}[-] <ERROR>: {e}{Fore.RESET}",file=sys.stderr)

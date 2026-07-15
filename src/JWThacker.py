@@ -11,7 +11,8 @@ import sys
 import json
 
 # 第三方库导入
-# import requests
+from colorama import init, Fore, Style
+
 
 # 本地模块导入
 from src.jwt_code import JWTcode
@@ -37,7 +38,7 @@ def JWT_encode(jwt:str,password:str|None=None,algorithm:str|None=None) -> str|No
         jwt_payload = jwt
         jwt_str=jwt_alg+'.'+jwt_payload
     else:
-        print(f"[-] <ERROR>: JWT格式错误", file=sys.stderr)
+        print(f"{Fore.RED}[-] <ERROR>: JWT格式错误{Fore.RESET}", file=sys.stderr)
         return None
 
     return JWTcode.jwt_encode(jwt_str,password)

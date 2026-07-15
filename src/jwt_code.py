@@ -16,6 +16,7 @@ import warnings
 
 # 第三方库导入
 import jwt
+from colorama import init, Fore, Style
 
 # 本地模块导入
 # from utils import helper
@@ -43,17 +44,17 @@ class JWTcode:
         jwt_string=data.split('.')
 
         if len(jwt_string) != 3:
-            print("[-] <ERROR>: Perhaps this isn't JWT.",file=sys.stderr)
+            print(f"{Fore.RED}[-] <ERROR>: Perhaps this isn't JWT.{Fore.RESET}",file=sys.stderr)
             return None
         try:
             jwt_string[0] = JWTcode._b64url_decode(jwt_string[0])
             jwt_string[1] = JWTcode._b64url_decode(jwt_string[1])
             return '.'.join(jwt_string)
         except binascii.Error as e:
-            print(f"[-] <ERROR>: Decoding failed! {e}",file=sys.stderr)
+            print(f"{Fore.RED}[-] <ERROR>: Decoding failed! {e}{Fore.RESET}",file=sys.stderr)
             return None
         except Exception as e:
-            print(f"[-] <ERROR>: {e}",file=sys.stderr)
+            print(f"{Fore.RED}[-] <ERROR>: {e}{Fore.RESET}",file=sys.stderr)
             return None
 
     @staticmethod
@@ -72,7 +73,7 @@ class JWTcode:
             token = jwt.encode(payload=jwt_list[1],key=password,algorithm=jwt_list[0]["alg"])
             return token
         except Exception as e:
-            print(f"[-] <ERROR>: {e}",file=sys.stderr)
+            print(f"{Fore.RED}[-] <ERROR>: {e}{Fore.RESET}",file=sys.stderr)
             return None
 
     @staticmethod
@@ -86,7 +87,7 @@ class JWTcode:
 
             return True if token == jwt_list[-1] else False
         except Exception as e:
-            print(f"[-] <ERROR>: {e}", file=sys.stderr)
+            print(f"{Fore.RED}[-] <ERROR>: {e}{Fore.RESET}", file=sys.stderr)
             return None
 
 
