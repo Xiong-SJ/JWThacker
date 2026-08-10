@@ -65,12 +65,12 @@ class JWTcode:
         :return: 加密的JWT，失败返回 None
         """
         jwt_list=jwt_str.split('.')
-        jwt_list[0] = json.loads(jwt_list[0])
-        jwt_list[1] = json.loads(jwt_list[1])
+        header_dict = json.loads(jwt_list[0])
+        payload_dict = json.loads(jwt_list[1])
         try:
-            if jwt_list[0]["alg"] is None:
+            if header_dict.get("alg","HS256") is None:
                 password=None
-            token = jwt.encode(payload=jwt_list[1],key=password,algorithm=jwt_list[0]["alg"])
+            token = jwt.encode(payload=payload_dict,key=password,algorithm=header_dict.get("alg","HS256"),headers=header_dict)
             return token
         except Exception as e:
             print(f"{Fore.RED}[-] <ERROR>: {e}{Fore.RESET}",file=sys.stderr)
@@ -78,11 +78,17 @@ class JWTcode:
 
     @staticmethod
     def examine_jwt(jwt_str:str,password:str|None=None) -> bool | None:
+        """
+        :param jwt_str: 加密的JWT
+        :param password: 要尝试JWT的加密的密码
+        :return: 密码正确返回True,否则返回False
+        """
+        jwt_str=JWTcode.jwt_decode(jwt_str)
         jwt_list = jwt_str.split('.')
         try:
-            jwt_list[0] = json.loads(jwt_list[0])
-            jwt_list[1] = json.loads(jwt_list[1])
-            token = jwt.encode(payload=jwt_list[1], key=password, algorithm=jwt_list[0]["alg"])
+            header_dict  = json.loads(jwt_list[0])
+            payload_dict = json.loads(jwt_list[1])
+            token = jwt.encode(payload=payload_dict, key=password, algorithm=header_dict.get("alg","HS256"),headers=header_dict)
             token = token.split('.')[-1]
 
             return True if token == jwt_list[-1] else False
@@ -94,19 +100,18 @@ class JWTcode:
 
 
 def main():
-    """主函数：程序入口逻辑"""
-    secret_key = "your-256-bit-secret"
-    payload = {
-        "sub": "user_123",
-        "exp": datetime.utcnow() + timedelta(hours=2)
-    }
-
-    # 生成带HS256签名的令牌
-    token = jwt.encode(payload, secret_key, algorithm = "HS256")
+    # """主函数：程序入口逻辑"""
+    secret_key = "YISHI"
+    payload = {"exp":1786387970,"username":"YISHI"}
+    #
+    # # 生成带HS256签名的令牌
+    token = jwt.encode(payload, secret_key, algorithm = "HS256",headers={"typ":"JWT","alg":"HS256"})
     print(token)
-    t=JWTcode.jwt_decode(token)
-    print(t)
-    print(JWTcode.examine_jwt(t,secret_key))
+    print(JWTcode.jwt_decode(token))
+    # t="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3ODYzODc5NzAsInVzZXJuYW1lIjoiWUlTSEkifQ.R-sOMGSr9OHfuOGe6A5F-VUPflYRJN_zfmvfKoTpZaw"
+    # print('原',JWTcode.jwt_decode(t))
+    # print(t)
+    # print(JWTcode.examine_jwt(t,"YISHI"))
 
 if __name__ == "__main__":
     main()
