@@ -1,0 +1,12 @@
+123456
+password
+admin
+secret
+key
+jwt
+test
+qwerty
+admin123
+letmein
+welcome
+password123
