@@ -28,20 +28,18 @@ def JWT_encode(jwt:str,password:str|None=None,algorithm:str|None=None) -> str|No
     """
     :return: 解码成功返回str，失败返回None
     """
+    jwt_header = {
+        "alg": algorithm,
+        "typ": "JWT"
+    }
 
     if re.fullmatch(r"\{[^}]*\}\.\{[^}]*\}", jwt):
-        jwt_str=jwt
-    elif re.fullmatch(r"^\{[^}]*\}$", jwt):
-        jwt_alg = json.dumps({
-            "alg": algorithm
-        })
-        jwt_payload = jwt
-        jwt_str=jwt_alg+'.'+jwt_payload
+        jwt_pyload=json.loads(jwt)
     else:
         print(f"{Fore.RED}[-] <ERROR>: JWT格式错误{Fore.RESET}", file=sys.stderr)
         return None
 
-    return JWTcode.jwt_encode(jwt_str,password)
+    return JWTcode.jwt_encode(jwt_header,jwt_pyload,password)
 
 
 def main():

@@ -11,6 +11,7 @@ JWThacker 是一个基于 Python 的 JWT（JSON Web Token）安全测试工具�
 
 ## 功能特性
 
+- **支持算法**:对称加密（如 HS256）、非对称加密（如 RS256、RS512）和椭圆曲线加密（如 ES256、ES384）
 - **JWT 解码**：将 JWT 的 Header 和 Payload 部分进行 Base64URL 解码，还原可读的 JSON 内容
 - **JWT 编码**：支持修改 Payload 后重新签名，可指定算法（alg）和密钥（password）
 - **暴力破解**（规划中）：通过字典爆破 JWT 密钥
