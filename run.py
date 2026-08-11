@@ -10,10 +10,10 @@ import argparse
 import sys
 
 # 第三方库导入
-from colorama import init, Fore, Style
+from colorama import Fore
 
 # 本地模块导入
-import src.JWThacker as JWThacker
+import src.JWThacker_api as JWThacker
 
 version="v 0.0.1"
 
@@ -62,6 +62,11 @@ def main():
             print(f"{Fore.RED}[-] 加密失败{Fore.RESET}", file=sys.stderr)
             sys.exit(-1)
         print(f"{Fore.GREEN}[+] <Success> : {token_decode}{Fore.RESET}")
+
+    elif args.command == "brute":
+        token_decode = JWThacker.JWT_decode(args.token)
+        wordlistpath = args.wordlist
+        JWThacker.JWT_key_brute(token_decode,wordlistpath)
 
     else:
         pass
