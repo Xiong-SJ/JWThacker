@@ -15,11 +15,14 @@ from colorama import Fore
 # 本地模块导入
 import src.JWThacker_api as JWThacker
 
-version="v 0.0.1"
+version="V 0.0.1"
 
 def main():
     """主函数：程序入口逻辑"""
     parser = argparse.ArgumentParser()
+
+    #查看版本
+    parser.add_argument("--version",action="version",version=version)
 
     subparsers = parser.add_subparsers(dest="command")
     # 解码命令
@@ -38,8 +41,8 @@ def main():
     par_brute.add_argument("token", type=str, help="编码的 JWT 字符串")
     par_brute.add_argument("-w","--wordlist", type=str, default=None, help="密码字典")
 
-    # TODO 启用GPU加速
-    parser.add_argument("--gpu", action="store_true", help="启用GPU加速（还未开放）")
+    # TODO 启用多进程加速
+    parser.add_argument("-j", "--jobs", type=int, help="启用多进程加速（还未开放）")
 
     args = parser.parse_args()
 

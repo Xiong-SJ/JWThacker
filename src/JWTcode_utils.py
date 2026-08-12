@@ -52,6 +52,7 @@ def jwt_encode(head:dict|None,payload:dict|None,password:str|None,jwt_str:str|No
 
     try:
         if header_dict['alg'] in ['None','none']:
+            header_dict['alg']='none'
             header_json = json.dumps(header_dict, separators=(',', ':'), ensure_ascii=False)
             payload_json = json.dumps(payload_dict, separators=(',', ':'), ensure_ascii=False)
 
