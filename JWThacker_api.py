@@ -52,7 +52,6 @@ def JWT_key_brute(token, wordlist_path, max_workers=8):
         found_key = None
         
         for key in keys:
-            # 调用同学写好的 examine_jwt 函数
             result = examine_jwt(token, key)
             if result is True:
                 found_key = key
