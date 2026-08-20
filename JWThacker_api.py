@@ -43,6 +43,9 @@ def JWT_encode(jwt:str,password:str|None=None,algorithm:str|None=None) -> str|No
 
 # TODO
 def JWT_key_brute(token, wordlist_path, max_workers=8):
+    import jwt
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    
     try:
         with open(wordlist_path, 'r', encoding='utf-8', errors='ignore') as f:
             keys = [line.strip() for line in f if line.strip()]
@@ -51,14 +54,25 @@ def JWT_key_brute(token, wordlist_path, max_workers=8):
         
         found_key = None
         
-        for key in keys:
-            result = examine_jwt(token, key)
-            if result is True:
-                found_key = key
-                break
+        def try_key(key):
+            if examine_jwt(token, key):
+                return key, True
+            return key, False
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(try_key, k): k for k in keys}
+            for future in as_completed(futures):
+                key, success = future.result()
+                if success:
+                    found_key = key
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    break
         
         if found_key:
             print(f"[+] 找到密钥: {found_key}")
+            payload = jwt.decode(token, found_key, algorithms=[alg])
+            print(f"[+] 解密后 Payload: {payload}")
+            return found_key
         else:
             print("[-] 未找到有效密钥")
             return None
