@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2026/7/15 12:35
 # @Author  : YISHI
-# @File    : JWThacker.py
+# @File    : JWThacker_api.py
 # @Software: PyCharm
 
 # 标准库导入
@@ -11,11 +11,11 @@ import sys
 import json
 
 # 第三方库导入
-from colorama import init, Fore, Style
+from colorama import Fore
 
 
 # 本地模块导入
-from src.jwt_code import JWTcode
+import src.JWTcode_utils as JWTcode
 
 
 def JWT_decode(token:str) -> str|None:
@@ -28,24 +28,25 @@ def JWT_encode(jwt:str,password:str|None=None,algorithm:str|None=None) -> str|No
     """
     :return: 解码成功返回str，失败返回None
     """
+    jwt_header = {
+        "alg": algorithm,
+        "typ": "JWT"
+    }
 
     if re.fullmatch(r"\{[^}]*\}\.\{[^}]*\}", jwt):
-        jwt_str=jwt
-    elif re.fullmatch(r"^\{[^}]*\}$", jwt):
-        jwt_alg = json.dumps({
-            "alg": algorithm
-        })
-        jwt_payload = jwt
-        jwt_str=jwt_alg+'.'+jwt_payload
+        jwt_pyload=json.loads(jwt)
     else:
         print(f"{Fore.RED}[-] <ERROR>: JWT格式错误{Fore.RESET}", file=sys.stderr)
         return None
 
-    return JWTcode.jwt_encode(jwt_str,password)
+    return JWTcode.jwt_encode(jwt_header,jwt_pyload,password)
+
+# TODO
+def JWT_key_brute():
+    pass
 
 
 def main():
-    """主函数：程序入口逻辑"""
     pass
 
 
