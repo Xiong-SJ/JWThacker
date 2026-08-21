@@ -69,16 +69,16 @@ def JWT_key_brute(token, wordlist_path, max_workers=8):
                     break
         
         if found_key:
-            print(f"[+] 找到密钥: {found_key}")
+            print(f"{Fore.GREEN}[+] 找到密钥: {found_key}{Fore.RESET}")
             payload = jwt.decode(token, found_key, algorithms=[alg])
-            print(f"[+] 解密后 Payload: {payload}")
+            print(f"{Fore.GREEN}[+] 解密后 Payload: {payload}{Fore.RESET}")
             return found_key
         else:
-            print("[-] 未找到有效密钥")
+            print(f"{Fore.RED}[-]{Fore.RESET} 未找到有效密钥")
             return None
             
     except Exception as e:
-        print(f"[-] 错误: {e}")
+        print(f"{Fore.RED}[-] 错误: {e}")
         return None
 
 def main():
