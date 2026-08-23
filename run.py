@@ -10,17 +10,32 @@ import argparse
 import sys
 
 # 第三方库导入
+<<<<<<< HEAD
+from colorama import Fore
+
+# 本地模块导入
+import src.JWThacker_api as JWThacker
+
+version="V 0.0.1"
+=======
 from colorama import init, Fore, Style
 
 # 本地模块导入
 import src.JWThacker as JWThacker
 
 version="v 0.0.1"
+>>>>>>> 60db859cea2c2a751154390a464a8783f1882a92
 
 def main():
     """主函数：程序入口逻辑"""
     parser = argparse.ArgumentParser()
 
+<<<<<<< HEAD
+    #查看版本
+    parser.add_argument("--version",action="version",version=version)
+
+=======
+>>>>>>> 60db859cea2c2a751154390a464a8783f1882a92
     subparsers = parser.add_subparsers(dest="command")
     # 解码命令
     par_decode=subparsers.add_parser("decode",help="解码 JWT")
@@ -38,8 +53,13 @@ def main():
     par_brute.add_argument("token", type=str, help="编码的 JWT 字符串")
     par_brute.add_argument("-w","--wordlist", type=str, default=None, help="密码字典")
 
+<<<<<<< HEAD
+    # TODO 启用多进程加速
+    parser.add_argument("-j", "--jobs", type=int, help="启用多进程加速（还未开放）")
+=======
     # TODO 启用GPU加速
     parser.add_argument("--gpu", action="store_true", help="启用GPU加速（还未开放）")
+>>>>>>> 60db859cea2c2a751154390a464a8783f1882a92
 
     args = parser.parse_args()
 
@@ -63,10 +83,32 @@ def main():
             sys.exit(-1)
         print(f"{Fore.GREEN}[+] <Success> : {token_decode}{Fore.RESET}")
 
+<<<<<<< HEAD
+    elif args.command == "brute":
+        token_decode = JWThacker.JWT_decode(args.token)
+        wordlistpath = args.wordlist
+        JWThacker.JWT_key_brute(token_decode,wordlistpath)
+
+    else:  # brute 命令
+        if args.token is None:
+            print(f"{Fore.RED}[-] 请提供 JWT 字符串{Fore.RESET}")
+            sys.exit(-1)
+        if args.wordlist is None:
+            print(f"{Fore.RED}[-] 请提供密码字典路径 (-w){Fore.RESET}")
+            sys.exit(-1)
+    
+        print(f"{Fore.GREEN}[*] 开始暴力破解...{Fore.RESET}")
+        result = JWThacker_api.JWT_key_brute(args.token, args.wordlist)
+        if result:
+            print(f"{Fore.GREEN}[+] 爆破成功！密钥: {result}{Fore.RESET}")
+        else:
+            print(f"{Fore.RED}[-] 未找到密钥{Fore.RESET}")
+=======
     else:
         pass
 
 
+>>>>>>> 60db859cea2c2a751154390a464a8783f1882a92
 
 if  __name__ == "__main__":
     try:
