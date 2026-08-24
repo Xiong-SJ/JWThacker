@@ -65,16 +65,23 @@ def main():
             print(f"{Fore.RED}[-] 加密失败{Fore.RESET}", file=sys.stderr)
             sys.exit(-1)
         print(f"{Fore.GREEN}[+] <Success> : {token_decode}{Fore.RESET}")
-
+        
     elif args.command == "brute":
-        token_decode = JWThacker.JWT_decode(args.token)
-        wordlistpath = args.wordlist
-        JWThacker.JWT_key_brute(token_decode,wordlistpath)
-
+        if args.token is None:
+            print(f"{Fore.RED}[-] 请提供 JWT 字符串{Fore.RESET}")
+            sys.exit(-1)
+        if args.wordlist is None:
+            print(f"{Fore.RED}[-] 请提供密码字典路径 (-w){Fore.RESET}")
+            sys.exit(-1)
+    
+        print(f"{Fore.GREEN}[*] 开始暴力破解...{Fore.RESET}")
+        result = JWThacker_api.JWT_key_brute(args.token, args.wordlist)
+        if result:
+            print(f"{Fore.GREEN}[+] 爆破成功！密钥: {result}{Fore.RESET}")
+        else:
+            print(f"{Fore.RED}[-] 未找到密钥{Fore.RESET}")
     else:
         pass
-
-
 
 if  __name__ == "__main__":
     try:
