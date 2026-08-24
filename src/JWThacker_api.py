@@ -34,6 +34,10 @@ def JWT_encode(jwt:str,password:str|None=None,algorithm:str|None=None) -> str|No
     }
 
     if re.fullmatch(r"\{[^}]*\}\.\{[^}]*\}", jwt):
+        jwt=jwt.split(".")
+        jwt_header = json.loads(jwt[0])
+        jwt_pyload = json.loads(jwt[1])
+    elif re.fullmatch(r"\{[^}]*\}", jwt):
         jwt_pyload=json.loads(jwt)
     else:
         print(f"{Fore.RED}[-] <ERROR>: JWT格式错误{Fore.RESET}", file=sys.stderr)
@@ -42,9 +46,43 @@ def JWT_encode(jwt:str,password:str|None=None,algorithm:str|None=None) -> str|No
     return JWTcode.jwt_encode(jwt_header,jwt_pyload,password)
 
 # TODO
-def JWT_key_brute():
-    pass
-
+def JWT_key_brute(token, wordlist_path, max_workers):
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    
+    try:
+        with open(wordlist_path, 'r', encoding='utf-8', errors='ignore') as f:
+            keys = [line.strip() for line in f if line.strip()]
+        
+        print(f"[*] 字典共 {len(keys)} 个密钥，使用 {max_workers} 个线程")
+        
+        found_key = None
+        
+        def try_key(key):
+            if JWTcode.examine_jwt(token, key):
+                return key, True
+            return key, False
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(try_key, k): k for k in keys}
+            for future in as_completed(futures):
+                key, success = future.result()
+                if success:
+                    found_key = key
+                    executor.shutdown(wait=False, cancel_futures=True)
+                    break
+        
+        if found_key:
+            print(f"[+] 找到密钥: {found_key}")
+            payload = JWTcode.jwt_decode(token)
+            print(f"[+] 解密后 Payload: {payload}")
+            return found_key
+        else:
+            print("[-] 未找到有效密钥")
+            return None
+            
+    except Exception as e:
+        print(f"[-] 错误: {e}")
+        return None
 
 def main():
     pass

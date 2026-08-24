@@ -14,7 +14,7 @@ JWThacker 是一个基于 Python 的 JWT（JSON Web Token）安全测试工具�
 - **支持算法**:对称加密（如 HS256）、非对称加密（如 RS256、RS512）和椭圆曲线加密（如 ES256、ES384）
 - **JWT 解码**：将 JWT 的 Header 和 Payload 部分进行 Base64URL 解码，还原可读的 JSON 内容
 - **JWT 编码**：支持修改 Payload 后重新签名，可指定算法（alg）和密钥（password）
-- **暴力破解**（规划中）：通过字典爆破 JWT 密钥
+- **暴力破解**：通过字典爆破 JWT 密钥
 - **启用多进程加速**：使用多进程通过字典爆破 JWT 密钥
 
 ---
@@ -25,6 +25,8 @@ JWThacker 是一个基于 Python 的 JWT（JSON Web Token）安全测试工具�
 JWThacker/
 ├── run.py                 # 命令行入口
 ├── requirements.txt       # 项目依赖
+├── config.py              # 配置文件
+├── wordlist.txt           # 默认密码字典
 ├── src/
 │   ├── __init__.py        # 包初始化
 │   ├── JWThacker.py       # 主要逻辑：解码/编码接口
@@ -86,7 +88,17 @@ python run.py encode '{"sub":"admin","exp":9999999999}' --alg HS256 -p "my-secre
 
 **无密码签名（alg=none）**：
 ```bash
-python run.py encode '{"alg":"none","typ":"JWT"}.{"sub":"admin"}' --alg None
+python run.py encode '{"alg":"none","typ":"JWT"}.{"sub":"admin"}'
+python run.py encode '{"sub":"admin"}' --alg None
+```
+
+**签名密码爆破**
+```bash
+# 使用默认字典
+python3 ./run.py brute eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiYWRtaW4ifQ.fXnqkrXQAP-LGQwu278ce7wMumjK5-BCGufrURKPSvE
+# 使用指定字典
+python3 ./run.py brute eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiYWRtaW4ifQ.fXnqkrXQAP-LGQwu278ce7wMumjK5-BCGufrURKPSvE -w PATH 
+
 ```
 
 ---
@@ -105,7 +117,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
-  -j, --jobs JOBS       启用多进程加速（还未开放）
+  -j, --jobs JOBS       启用多进程加速（默认是4个进程）
 ```
 
 ---
@@ -115,8 +127,8 @@ options:
 - [x] JWT 解码
 - [x] JWT 编码（伪造）
 - [x] 签名验证（`examine_jwt`）
-- [ ] 暴力破解（字典模式）
-- [ ] 启用多进程加速
+- [x] 暴力破解（字典模式）
+- [x] 启用多进程加速
 - [X] 支持更多 JWT 算法（RS256, ES256 等）
 
 ---
@@ -131,10 +143,6 @@ options:
 
 ## 作者
 
-**YISHI**
+**YISHI(译世)**
 
----
-
-## 许可证
-
-MIT License
+**Benar**
