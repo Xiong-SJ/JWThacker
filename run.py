@@ -18,7 +18,7 @@ from colorama import Fore
 # 本地模块导入
 import src.JWThacker_api as JWThacker
 
-version="V 0.0.1"
+version="V 1.0.0"
 
 def main():
     """主函数：程序入口逻辑"""
