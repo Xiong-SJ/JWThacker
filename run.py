@@ -5,21 +5,27 @@
 # @File    : run.py
 # @Software: PyCharm
 
+# 查看第三方库是否安装
+import config
+
 # 标准库导入
 import argparse
 import sys
 
 # 第三方库导入
-from colorama import init, Fore, Style
+from colorama import Fore
 
 # 本地模块导入
-import src.JWThacker as JWThacker
+import src.JWThacker_api as JWThacker
 
-version="v 0.0.1"
+version="V 1.0.0"
 
 def main():
     """主函数：程序入口逻辑"""
     parser = argparse.ArgumentParser()
+
+    #查看版本
+    parser.add_argument("--version",action="version",version=version)
 
     subparsers = parser.add_subparsers(dest="command")
     # 解码命令
@@ -31,15 +37,14 @@ def main():
     par_encode=subparsers.add_parser("encode",help="编码 JWT")
     par_encode.add_argument("token", type=str, help="原 JWT 字符串")
     par_encode.add_argument("-p","--password",type=str,default=None,help="密码")
-    par_encode.add_argument("--alg",type=str,default=None,help="需要的加密算法加密算法（若原 JWT 字符串中不含 alg 字段则需指定）")
+    par_encode.add_argument("--alg",type=str,default="HS256",help="需要的加密算法加密算法（若原 JWT 字符串中不含 alg 字段则需指定）")
 
-    # TODO 暴力破解
+    # 暴力破解
     par_brute=subparsers.add_parser("brute",help="暴力破解 JWT 密码（还未开放）")
     par_brute.add_argument("token", type=str, help="编码的 JWT 字符串")
     par_brute.add_argument("-w","--wordlist", type=str, default=None, help="密码字典")
-
-    # TODO 启用GPU加速
-    parser.add_argument("--gpu", action="store_true", help="启用GPU加速（还未开放）")
+    # 多进程加速
+    parser.add_argument("-j", "--jobs", type=int, default=4 ,help="启用多进程加速（默认是4个进程）")
 
     args = parser.parse_args()
 
@@ -56,17 +61,29 @@ def main():
         print(f"{Fore.GREEN}[+] <Success> : {token_decode}{Fore.RESET}")
 
     elif args.command == "encode":
-        if args.alg =="None": args.alg=None
+        if args.alg in ["None",'none'] : args.alg='none'
         token_decode = JWThacker.JWT_encode(args.token,password=args.password,algorithm=args.alg)
         if token_decode is None:
             print(f"{Fore.RED}[-] 加密失败{Fore.RESET}", file=sys.stderr)
             sys.exit(-1)
         print(f"{Fore.GREEN}[+] <Success> : {token_decode}{Fore.RESET}")
-
+        
+    elif args.command == "brute":
+        if args.token is None:
+            print(f"{Fore.RED}[-] 请提供 JWT 字符串{Fore.RESET}")
+            sys.exit(-1)
+        if args.wordlist is None:
+            print(f"{Fore.BLUE}[*] 已使用默认字典 {Fore.RESET}")
+            args.wordlist = './wordlist.txt'
+    
+        print(f"{Fore.BLUE}[*] 开始暴力破解...{Fore.RESET}")
+        result = JWThacker.JWT_key_brute(args.token, args.wordlist, args.jobs)
+        if result:
+            print(f"{Fore.GREEN}[+] 爆破成功！密钥: {result}{Fore.RESET}")
+        else:
+            print(f"{Fore.RED}[-] 未找到密钥{Fore.RESET}")
     else:
         pass
-
-
 
 if  __name__ == "__main__":
     try:

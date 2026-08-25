@@ -5,16 +5,17 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-JWThacker 是一个基于 Python 的 JWT（JSON Web Token）安全测试工具，支持 JWT 的**解码**、**重新编码（伪造）**，并计划支持**暴力破解**与 **GPU 加速**功能。适用于 CTF 竞赛、渗透测试及安全研究场景。
+JWThacker 是一个基于 Python 的 JWT（JSON Web Token）安全测试工具，支持 JWT 的**解码**、**重新编码（伪造）**，并计划支持**暴力破解**与 **多进程加速**功能。适用于 CTF 竞赛、渗透测试及安全研究场景。
 
 ---
 
 ## 功能特性
 
+- **支持算法**:对称加密（如 HS256）、非对称加密（如 RS256、RS512）和椭圆曲线加密（如 ES256、ES384）
 - **JWT 解码**：将 JWT 的 Header 和 Payload 部分进行 Base64URL 解码，还原可读的 JSON 内容
 - **JWT 编码**：支持修改 Payload 后重新签名，可指定算法（alg）和密钥（password）
-- **暴力破解**（规划中）：通过字典爆破 JWT 密钥
-- **GPU 加速**（规划中）：利用 GPU 加速暴力破解过程
+- **暴力破解**：通过字典爆破 JWT 密钥
+- **启用多进程加速**：使用多进程通过字典爆破 JWT 密钥
 
 ---
 
@@ -24,6 +25,8 @@ JWThacker 是一个基于 Python 的 JWT（JSON Web Token）安全测试工具�
 JWThacker/
 ├── run.py                 # 命令行入口
 ├── requirements.txt       # 项目依赖
+├── config.py              # 配置文件
+├── wordlist.txt           # 默认密码字典
 ├── src/
 │   ├── __init__.py        # 包初始化
 │   ├── JWThacker.py       # 主要逻辑：解码/编码接口
@@ -85,7 +88,17 @@ python run.py encode '{"sub":"admin","exp":9999999999}' --alg HS256 -p "my-secre
 
 **无密码签名（alg=none）**：
 ```bash
-python run.py encode '{"alg":"none","typ":"JWT"}.{"sub":"admin"}' --alg None
+python run.py encode '{"alg":"none","typ":"JWT"}.{"sub":"admin"}'
+python run.py encode '{"sub":"admin"}' --alg None
+```
+
+**签名密码爆破**
+```bash
+# 使用默认字典
+python3 ./run.py brute eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiYWRtaW4ifQ.fXnqkrXQAP-LGQwu278ce7wMumjK5-BCGufrURKPSvE
+# 使用指定字典
+python3 ./run.py brute eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiYWRtaW4ifQ.fXnqkrXQAP-LGQwu278ce7wMumjK5-BCGufrURKPSvE -w PATH 
+
 ```
 
 ---
@@ -93,23 +106,18 @@ python run.py encode '{"alg":"none","typ":"JWT"}.{"sub":"admin"}' --alg None
 ## 命令行参数
 
 ```
-usage: run.py [-h] {decode,encode,brute} ...
+usage: run.py [-h] [--version] [-j JOBS] {decode,encode,brute} ...
 
-子命令：
-  decode      解码 JWT
-  encode      编码 JWT
-  brute       暴力破解 JWT 密码（规划中）
+positional arguments:
+  {decode,encode,brute}
+    decode              解码 JWT
+    encode              编码 JWT
+    brute               暴力破解 JWT 密码（还未开放）
 
-decode 参数：
-  token       编码的 JWT 字符串
-
-encode 参数：
-  token       原 JWT 字符串
-  -p, --password   签名密钥
-  --alg            加密算法（若原 JWT 字符串中不含 alg 字段则需指定）
-
-可选参数：
-  --gpu       启用 GPU 加速（规划中）
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+  -j, --jobs JOBS       启用多进程加速（默认是4个进程）
 ```
 
 ---
@@ -119,9 +127,9 @@ encode 参数：
 - [x] JWT 解码
 - [x] JWT 编码（伪造）
 - [x] 签名验证（`examine_jwt`）
-- [ ] 暴力破解（字典模式）
-- [ ] GPU 加速（CUDA / OpenCL）
-- [ ] 支持更多 JWT 算法（RS256, ES256 等）
+- [x] 暴力破解（字典模式）
+- [x] 启用多进程加速
+- [X] 支持更多 JWT 算法（RS256, ES256 等）
 
 ---
 
@@ -135,10 +143,6 @@ encode 参数：
 
 ## 作者
 
-**YISHI**
+**YISHI(译世)**
 
----
-
-## 许可证
-
-MIT License
+**Benar**
