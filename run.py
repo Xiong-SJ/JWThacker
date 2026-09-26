@@ -11,6 +11,7 @@ import config
 # 标准库导入
 import argparse
 import sys
+import os
 
 # 第三方库导入
 from colorama import Fore
@@ -74,7 +75,7 @@ def main():
             sys.exit(-1)
         if args.wordlist is None:
             print(f"{Fore.BLUE}[*] 已使用默认字典 {Fore.RESET}")
-            args.wordlist = './wordlist.txt'
+            args.wordlist = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wordlist.txt")
     
         print(f"{Fore.BLUE}[*] 开始暴力破解...{Fore.RESET}")
         result = JWThacker.JWT_key_brute(args.token, args.wordlist, args.jobs)
